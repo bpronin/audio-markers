@@ -16,29 +16,27 @@ public class TracksToMarkers {
         Scanner scanner = new Scanner(new FileInputStream(tracks));
         PrintWriter writer = new PrintWriter(markers);
 
-        writer.println("Name\tStart\tDuration\tTime Format\tType\tDescription");
+        try(scanner; writer) {
+            writer.println("Name\tStart\tDuration\tTime Format\tType\tDescription");
 
-        try {
             String[] firstLine = readLine(scanner);
             Duration start = parseTime(firstLine[0]);
             String name = firstLine[1];
+            int trackNo = 1;
             Duration end;
 
             while (scanner.hasNext()) {
                 String[] line = readLine(scanner);
                 end = parseTime(line[0]);
 
-                writeLine(writer, start, end.minus(start), name);
+                writeLine(writer, trackNo, start, end.minus(start), name);
 
                 name = line[1];
                 start = end;
+                trackNo++;
             }
 
-            writeLine(writer, start, Duration.ofSeconds(10), name);
-
-        } finally {
-            scanner.close();
-            writer.close();
+            writeLine(writer, trackNo, start, Duration.ofSeconds(10), name);
         }
     }
 
@@ -50,12 +48,13 @@ public class TracksToMarkers {
         return "markers-" + tracks.getName().split("\\.")[0] + ".csv";
     }
 
-    private static void writeLine(PrintWriter writer, Duration start, Duration duration, String name) {
-        writer.println(name + "\t"
-                + formatTime(start) + "\t"
-                + formatTime(duration) + "\t"
-                + "decimal\t"
-                + "Cue\t");
+    private static void writeLine(PrintWriter writer, int trackNo, Duration start, Duration duration, String name) {
+        writer.format("%02d - %s\t%s\t%s\tdecimal\tCue\t\r\n",
+                trackNo,
+                name,
+                formatTime(start),
+                formatTime(duration)
+        );
     }
 
     private static Duration parseTime(String s) {

@@ -2,10 +2,12 @@ import sys
 import ntpath
 import datetime
 
+TIME_FACTOR = 1.002
+
 
 def parse_duration(s):
     t = datetime.datetime.strptime(s, "%H:%M:%S")
-    return datetime.timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+    return datetime.timedelta(hours=t.hour, minutes=t.minute, seconds=t.second) * TIME_FACTOR
 
 
 def format_duration(t):
@@ -24,17 +26,23 @@ src_filename = str(sys.argv[1])
 dst_filename = ntpath.join(ntpath.dirname(src_filename), "markers.csv")
 src_file = open(src_filename, "r")
 dst_file = open(dst_filename, "w")
+
+
+def parse_track_no(s):
+    return int(s.split(".")[0])
+
+
 try:
     dst_file.write("Name\tStart\tDuration\tTime Format\tType\tDescription\n")
 
-    line = src_file.readline()
+    line = src_file.readline().strip()
     fields = line.split("\t")
-    track_name = fields[0]
+    track_name = fields[2]
     start_time = parse_duration(fields[1])
     track_no = 1
 
     while True:
-        line = src_file.readline()
+        line = src_file.readline().strip()
         if not line:
             break
 
@@ -43,7 +51,7 @@ try:
 
         write_line(dst_file, track_no, start_time, end_time - start_time, track_name)
 
-        track_name = fields[0]
+        track_name = fields[2]
         start_time = end_time
         track_no += 1
 

@@ -1,8 +1,8 @@
-import sys
 import ntpath
 import datetime
 
-TIME_FACTOR = 1.002
+SRC_FILENAME = "D:/Temp/Perfect Love Songs/tracks"
+TIME_FACTOR = 1.003
 
 
 def parse_duration(s):
@@ -22,9 +22,8 @@ def write_line(file, no, start, dur, name):
     file.write(ln)
 
 
-src_filename = str(sys.argv[1])
-dst_filename = ntpath.join(ntpath.dirname(src_filename), "markers.csv")
-src_file = open(src_filename, "r")
+dst_filename = ntpath.join(ntpath.dirname(SRC_FILENAME), "markers.csv")
+src_file = open(SRC_FILENAME, "r")
 dst_file = open(dst_filename, "w")
 
 
